@@ -23,7 +23,6 @@ export async function GET(request: Request) {
 
   // since we are writting aggregation pipeline
   const userId = new mongoose.Types.ObjectId(user._id);
-  // console.log("user id hai -> ", userId);
 
   try {
     const user = await UserModel
@@ -31,14 +30,14 @@ export async function GET(request: Request) {
         { $match: { _id: userId } },
         {
           $unwind: {
-            path: "$message",
+            path: "$messages",
             preserveNullAndEmptyArrays: true,
           },
         },
         {
-          $sort: { "message.createdAt": -1 },
+          $sort: { "messages.createdAt": -1 },
         },
-        { $group: { _id: "$_id", message: { $push: "$message" } } },
+        { $group: { _id: "$_id", messages: { $push: "$messages" } } },
       ])
       .exec();
 
@@ -48,7 +47,7 @@ export async function GET(request: Request) {
       return Response.json(
         {
           success: false,
-          message: "user nahi found",
+          message: "User not found",
         },
         { status: 401 }
       );
@@ -57,7 +56,7 @@ export async function GET(request: Request) {
     return Response.json(
       {
         success: true,
-        messages: user[0].message, // sending whole message array 
+        messages: user[0].messages, // sending whole message array 
       },
       { status: 201 }
     );
