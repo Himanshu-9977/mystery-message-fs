@@ -2,34 +2,15 @@ import UserModel from '@/models/User';
 import { getServerSession } from 'next-auth/next';
 import dbConnect from '@/lib/dbConnect';
 import { User } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/options';
-
-// import { useSearchParams } from "next/navigation";  not gona work 
-
-/* 
-// app/[foo]/[bar]/page.tsx
-
-import { Outer } from "../../Outer";
-import { store } from "../../store";
-
-export default function Page ({params}: {params: { foo: string; bar: string }}) {
-
-  const { foo, bar } = params;
-  store.setData(`/${foo}/${bar}`);
-  return <Outer />;
-} */
-
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { message_id: string } } // this is the way to take the data dynamically in serverside
+  { params }: { params: { messageid: string } } // this is the way to take the data dynamically in serverside
 ) {
 
-  const messageId = params.message_id;
+  const messageId = params.messageid;
   console.log(messageId)
-
-  /* const searchParams = useSearchParams();   useParams can only be run on client side and this is a {api}
-  const messageId = searchParams.get("message_id"); */
 
   await dbConnect();
 
@@ -45,7 +26,7 @@ export async function DELETE(
   try {
     const updateResult = await UserModel.updateOne(
       { _id: _user._id },
-      { $pull: { message: { createdAt: messageId}}}
+      { $pull: { messages: { _id: messageId}}}
     );
 
     if (updateResult.modifiedCount === 0) {

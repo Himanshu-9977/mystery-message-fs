@@ -33,25 +33,20 @@ type MessageCardProps = {
 
 const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
 
-  // console.log("message hai -> ", message);
 
   const { toast } = useToast();
   const date = new Date(message.createdAt)
   const formattedDate = date.toDateString()
 
-
+ 
   const handleDeleteConfirm = async () => {
 
-    const message_id = message.createdAt.toString();
-    const response = await axios.delete<ApiResponse>(`/api/delete-message/${message_id}`);
-    // note imp -> whenever sending data via url so to call that link we have to use square braket in that api call place like {delete-msg[message_id]}
-
-    // console.log("response of delete -> ", response);
+    const response = await axios.delete<ApiResponse>(`/api/delete-message/${message._id as string}`);
 
     toast({
       title : response.data.message,
     })
-    onMessageDelete(message_id);
+    onMessageDelete(message._id as string);
   };
 
   return (
